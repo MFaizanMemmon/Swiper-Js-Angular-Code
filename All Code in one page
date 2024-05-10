@@ -1,0 +1,365 @@
+// Css
+=====================================================================================
+swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    swiper-slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+/* -----Set Swipper Ui------ */
+:root {
+  --vc-clr-primary: #000;
+  --vc-clr-secondary: #090f207f;
+  --vc-clr-white: #fff;
+  --vc-icn-width: 1.2em;
+  --vc-nav-width: 30px;
+  --vc-nav-height: 30px;
+  --vc-nav-border-radius: 0;
+  --vc-nav-color: var(--vc-clr-primary);
+  --vc-nav-color-hover: var(--vc-clr-secondary);
+  --vc-nav-background: transparent;
+  --vc-pgn-width: 12px;
+  --vc-pgn-height: 4px;
+  --vc-pgn-margin: 4px;
+  --vc-pgn-border-radius: 0;
+  --vc-pgn-background-color: var(--vc-clr-secondary);
+  --vc-pgn-active-color: var(--vc-clr-primary)
+}
+
+.carousel__pagination {
+  display: flex;
+  justify-content: center;
+  line-height: 0;
+  list-style: none;
+  margin: 10px 0 0
+}
+
+.carousel__pagination-button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  margin: 0;
+  padding: var(--vc-pgn-margin)
+}
+
+.carousel__pagination-button:after {
+  background-color: var(--vc-pgn-background-color);
+  border-radius: var(--vc-pgn-border-radius);
+  content: "";
+  display: block;
+  height: var(--vc-pgn-height);
+  width: var(--vc-pgn-width)
+}
+
+.carousel__pagination-button--active:after,
+.carousel__pagination-button:hover:after {
+  background-color: var(--vc-pgn-active-color)
+}
+
+.carousel__next,
+.carousel__prev {
+  align-items: center;
+  background: var(--vc-nav-background);
+  border: 0;
+  border-radius: var(--vc-nav-border-radius);
+  box-sizing: content-box;
+  color: var(--vc-nav-color);
+  cursor: pointer;
+  display: flex;
+  font-size: var(--vc-nav-height);
+  height: var(--vc-nav-height);
+  justify-content: center;
+  margin: 0 10px;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--vc-nav-width)
+}
+
+.carousel__next:hover,
+.carousel__prev:hover {
+  color: var(--vc-nav-color-hover)
+}
+
+.carousel__next--disabled,
+.carousel__prev--disabled {
+  cursor: not-allowed;
+  opacity: .5
+}
+
+.carousel__prev {
+  left: 0
+}
+
+.carousel__next {
+  right: 0
+}
+
+.carousel--rtl .carousel__prev {
+  left: auto;
+  right: 0
+}
+
+.carousel--rtl .carousel__next {
+  left: 0;
+  right: auto
+}
+
+.carousel {
+  position: relative;
+  text-align: center
+}
+
+.carousel,
+.carousel * {
+  box-sizing: border-box
+}
+
+.carousel__track {
+  display: flex;
+  overscroll-behavior: none;
+  padding: 0 !important;
+  position: relative;
+  touch-action: none
+}
+
+.carousel__viewport {
+  overflow: hidden
+}
+
+.carousel__sr-only {
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px
+}
+
+.carousel__icon {
+  fill: currentColor;
+  height: var(--vc-icn-width);
+  width: var(--vc-icn-width)
+}
+
+.carousel__slide {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+  scroll-snap-stop: auto;
+  transform: translateZ(0)
+}
+a{
+  text-decoration: none;
+}
+.black-font{
+  color: black;
+}
+/* -----Set Swipper Ui End------ */
+
+
+Ts
+====================================================================================================
+
+import { Component, OnInit, effect, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { RestaurantService } from '../shared/menu.service';
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { register as registerSwiperElements } from 'swiper/element/bundle';
+import Swiper from 'swiper';
+import { SwiperOptions } from 'swiper/types';
+
+registerSwiperElements();
+
+@Component({
+  selector: 'app-restaurant-menu',
+  templateUrl: './restaurant-menu.component.html',
+  styleUrl: './restaurant-menu.component.css',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [CommonModule],
+
+})
+
+
+export class RestaurantMenuComponent implements OnInit, AfterViewInit {
+
+  typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
+  constructor(public service: RestaurantService, private route: ActivatedRoute) {
+
+    effect(() => {
+      console.log(this.service.count());
+      this.receivedData = this.service.count();
+
+      if (this.receivedData) {
+        this.filteredData = this.service.itemList.filter(item =>
+          item.ItemName.toLowerCase().includes(this.receivedData.toLowerCase())
+        );
+      } else {
+        // If no data is received, display the original list
+        this.filteredData = [...this.service.itemList];
+      }
+    })
+
+  }
+  @ViewChild('swiperContainer') swiperContainer!: ElementRef;
+  swiperInstance!: Swiper;
+  activeCategoryId: number | null  = 0;
+
+
+  ngAfterViewInit(): void {
+    const swiperEl = this.swiperContainer.nativeElement;
+    Object.assign(swiperEl, {
+      slidesPerView: 1,
+      spaceBetween: 10,
+      breakpoints: {
+        100: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        350: {
+          slidesPerView: 2.5,
+          spaceBetween: 20,
+        },
+        550: {
+          slidesPerView: 4,
+          spaceBetween: 20,
+        },
+        767: {
+          slidesPerView: 5,
+          spaceBetween: 20,
+        },
+        990: {
+          slidesPerView: 7,
+          spaceBetween: 40,
+        },
+
+
+        1250: {
+          slidesPerView: 8,
+          spaceBetween: 0,
+        },
+
+      },
+    });
+    // swiperEl.initialize();
+  }
+
+  private handleResize(): void {
+    const activeBreakpoint = this.swiperInstance.activeIndex;
+
+    // You n add logic to apply CSS styles based on the active breakpoint
+    switch (activeBreakpoint) {
+      case 640:
+        // Apply CSS styles for 640px breakpoint
+        break;
+      case 768:
+        // Apply CSS styles for 768px breakpoint
+        break;
+      case 1024:
+        // Apply CSS styles for 1024px breakpoint
+        break;
+      default:
+        // Apply default CSS styles
+        break;
+    }
+  }
+
+  receivedData: string = '';
+  filteredData: any[] = [];
+  CategoryData: any[] = [];
+
+
+
+  ngOnInit(): void {
+
+    this.service.refreshList();
+    this.filteredData = this.service.itemList;
+    this.CategoryData = this.service.categoryList;
+    console.log(this.CategoryData);
+  }
+
+  SortCategory(item: any, CatId: number) {
+    debugger
+
+    if (CatId > 0) {
+      this.filteredData = this.service.itemList.filter(item =>
+        item.CategoryID == CatId);
+    }
+    else{
+      this.filteredData = this.service.itemList;
+    }
+    this.activeCategoryId = CatId;
+
+  }
+
+}
+
+Html
+================================================================================================
+
+<swiper-container class="mySwiper my-3" #swiperContainer>
+
+    <swiper-slide>
+        <li class="carousel__slide carousel__slide--visible carousel__slide--active swiper-slide pos-group"
+            aria-hidden="false" style="width: 140px;">
+            <a (click)="SortCategory($event,0)"
+                [ngClass]="{'active': activeCategoryId == 0}"
+                class="router-link-exact-active swiper-slide w-32 flex flex-col items-center text-center gap-4 p-3 rounded-2xl border-b-2 border-transparent transition hover:bg-primary-light bg-[#F7F7FC] overflow-hidden">
+                <img style="width: auto !important;" class="h-10 drop-shadow-category"
+                    src="https://demo.foodscan.xyz/images/default/all-category.png" alt="category">
+                <h3
+                    class="black-font w-full text-xs leading-[16px] whitespace-nowrap overflow-hidden text-ellipsis font-medium font-rubik">
+                    All
+                    <input type="hidden" value="0">
+                </h3>
+            </a>
+        </li>
+
+    </swiper-slide>
+
+
+    <swiper-slide *ngFor="let item of this.CategoryData;">
+        <li class="carousel__slide carousel__slide--visible carousel__slide--active swiper-slide pos-group"
+            aria-hidden="false" style="width: 140px;">
+            <a type="button" (click)="SortCategory($event,item.CategoryID)"
+                [ngClass]="{'active': item.CategoryID === activeCategoryId}"
+                class=" router-link-exact-active swiper-slide w-32 flex flex-col items-center text-center gap-4 p-3 rounded-2xl border-b-2 border-transparent transition hover:bg-primary-light bg-[#F7F7FC] overflow-hidden">
+
+                <img style="width: auto !important;" class="h-10 drop-shadow-category"
+                    [src]="item.CategoryImage === '0' ? 'https://demo.foodscan.xyz/images/default/all-category.png' : item.CategoryImage">
+
+
+                <h3
+                    class="black-font w-full text-xs leading-[16px] whitespace-nowrap overflow-hidden text-ellipsis font-medium font-rubik">
+                    {{item.CategoryName}}</h3>
+                <input type="hidden" value="{{item.CategoryID}}">
+            </a>
+        </li>
+
+    </swiper-slide>
+
+</swiper-container>
